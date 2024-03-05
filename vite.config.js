@@ -8,4 +8,9 @@ export default defineConfig({
     VueRouter(),
     vue()
   ],
+  resolve: {
+    alias: {
+      '@': '/src'
+    }
+  }
 });
