@@ -1,6 +1,28 @@
 <script setup>
 import { RouterView } from "vue-router";
 import Toast from "primevue/toast";
+import { useUserStore } from '@/stores/user';
+import { onMounted } from "vue";
+
+const store = useUserStore();
+
+onMounted(async () => {
+  console.log("onMounted");
+  const token = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+  if (token) {
+    axios.defaults.headers.common["Authorization"] = `Token ${token}`;
+  }
+
+  await store.getUser();
+
+  if (!store.isAuthenticated) {
+    router.push('/login');
+  }
+});
+
+// Attempt to retrieve the user from 
+
 </script>
 
 <template>

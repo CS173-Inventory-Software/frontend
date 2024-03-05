@@ -34,6 +34,9 @@ import Password from 'primevue/password';
 import { computed, ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useToast } from 'primevue/usetoast';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const store = useUserStore();
 
@@ -89,7 +92,9 @@ const login = async () => {
   try {
     const { data } = await axios.post('/login/', { email, code });
     window.axios.defaults.headers.common['Authorization'] = `Token ${data.token}`;
-    getUserData();
+    document.cookie = `token=${data.token};`;
+    await getUserData();
+    router.push('/');
   } catch (error) {
     toast.add({ severity: 'error', summary: 'Error', detail: "Could not login", life: 3000 });
   } finally {
