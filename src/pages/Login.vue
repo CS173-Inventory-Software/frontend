@@ -93,6 +93,7 @@ const login = async () => {
     const { data } = await axios.post('/login/', { email, code });
     window.axios.defaults.headers.common['Authorization'] = `Token ${data.token}`;
     document.cookie = `token=${data.token};`;
+    toast.add({ severity: 'success', summary: 'Logged in', detail: 'Welcome', life: 3000 });
     await getUserData();
     router.push('/');
   } catch (error) {
