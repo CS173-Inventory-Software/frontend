@@ -19,7 +19,7 @@
       <template #footer>
         <div class="flex gap-3 mt-1">
 
-          <Button label="Login" class="w-full" type="submit" :disabled="!(form.email && form.code)" />
+          <Button :label="loginText" class="w-full" type="submit" :disabled="!(form.email && form.code) || loggingIn" />
         </div>
       </template>
     </Card>
@@ -60,6 +60,7 @@ const requestCodeText = computed(() => {
 
 const requestCode = async () => {
   const { email } = form.value;
+  sendingCode.value = true;
   await axios.post('/request-code/', { email });
   timer.value = 60;
   const interval = setInterval(() => {
@@ -68,15 +69,32 @@ const requestCode = async () => {
       clearInterval(interval);
     }
   }, 1000);
-  toast.add({ severity: 'success', summary: 'Code sent', detail: 'Check your email' });
+  toast.add({ severity: 'success', summary: 'Code sent', detail: 'Check your email', life: 3000 });
+  sendingCode.value = false;
 };
 
-const login = async () => {
-  const { email, code } = form.value;
-  const { data } = await axios.post('/login/', { email, code });
-  window.axios.defaults.headers.common['Authorization'] = `Token ${data.token}`;
+const loggingIn = ref(false);
 
-  getUserData();
+const loginText = computed(() => {
+  if (loggingIn.value) {
+    return "Logging in...";
+  }
+  return "Login";
+});
+
+const login = async () => {
+  loggingIn.value = true;
+  const { email, code } = form.value;
+
+  try {
+    const { data } = await axios.post('/login/', { email, code });
+    window.axios.defaults.headers.common['Authorization'] = `Token ${data.token}`;
+    getUserData();
+  } catch (error) {
+    toast.add({ severity: 'error', summary: 'Error', detail: "Could not login", life: 3000 });
+  } finally {
+    loggingIn.value = false;
+  }
 };
 
 const getUserData = async () => {
