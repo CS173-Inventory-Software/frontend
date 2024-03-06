@@ -3,11 +3,12 @@ import { RouterView } from "vue-router";
 import Toast from "primevue/toast";
 import { useUserStore } from '@/stores/user';
 import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const store = useUserStore();
 
 onMounted(async () => {
-  console.log("onMounted");
   const token = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
   if (token) {
