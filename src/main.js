@@ -19,7 +19,7 @@ window.axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
 createApp(App)
   .use(router)
-  .use(PrimeVue)
+  .use(PrimeVue, { ripple: true })
   .use(ToastService)
   .use(createPinia())
   .mount('#app');
