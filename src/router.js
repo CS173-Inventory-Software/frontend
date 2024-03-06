@@ -13,11 +13,11 @@ router.beforeEach(async (to, from) => {
   console.log(to, from);
 
   // Check if the user is authenticated
-  if (to.name !== '/Login' && !store.isAuthenticated()) {
+  if (to.name !== '/login' && !store.isAuthenticated()) {
     return '/login';
   }
 
-  if (to.name === '/Login' && store.isAuthenticated()) {
+  if (to.name === '/login' && store.isAuthenticated()) {
     return '/';
   }
 

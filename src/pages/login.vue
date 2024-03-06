@@ -109,7 +109,15 @@ const getUserData = async () => {
 };
 </script>
 
-<style>
+<style scoped lang="scss">
+form {
+  margin: 0 auto;
+  flex-grow: 1;
+  flex-direction: column;
+  justify-content: center;
+  display: flex;
+}
+
 #code-input {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
