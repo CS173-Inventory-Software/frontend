@@ -64,15 +64,19 @@ const requestCodeText = computed(() => {
 const requestCode = async () => {
   const { email } = form.value;
   sendingCode.value = true;
-  await axios.post('/request-code/', { email });
-  timer.value = 60;
-  const interval = setInterval(() => {
-    timer.value--;
-    if (timer.value === 0) {
-      clearInterval(interval);
-    }
-  }, 1000);
-  toast.add({ severity: 'success', summary: 'Code sent', detail: 'Check your email', life: 3000 });
+  try {
+    await axios.post('/request-code/', { email });
+    timer.value = 60;
+    const interval = setInterval(() => {
+      timer.value--;
+      if (timer.value === 0) {
+        clearInterval(interval);
+      }
+    }, 1000);
+    toast.add({ severity: 'success', summary: 'Code sent', detail: 'Check your email', life: 3000 });
+  } catch (error) {
+    toast.add({ severity: 'error', summary: 'Error', detail: "Could not send code", life: 3000 });
+  }
   sendingCode.value = false;
 };
 
