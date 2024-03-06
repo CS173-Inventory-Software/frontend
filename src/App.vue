@@ -31,7 +31,24 @@ onMounted(async () => {
   <Toast />
 </template>
 
-<style scoped>
+<style lang="scss">
+/* Sizing */
+html,
+body {
+  height: 100%;
+}
+
+#app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  main {
+    flex-grow: 1;
+  }
+}
+
+
 .logo {
   height: 6em;
   padding: 1.5em;

@@ -5,6 +5,7 @@ import App from './App.vue';
 import PrimeVue from 'primevue/config';
 import 'primevue/resources/themes/aura-light-purple/theme.css';
 import 'primeflex/primeflex.css';
+import 'primeicons/primeicons.css';
 import ToastService from 'primevue/toastservice';
 import router from './router';
 
