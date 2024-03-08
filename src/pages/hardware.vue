@@ -12,64 +12,76 @@
         data-key="id"
         row-hover
         :loading="loading"
-        v-model:filters="filters"
-        filterDisplay="row">
-        <Column field="id" header="ID" sortable>
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
-              placeholder="Search by id" />
-          </template>
+        show-grid-lines
+        v-model:filters="search.filters"
+        filterDisplay="menu"
+        :total-records="search.totalRecords"
+        @sort="sort"
+        @page="page"
+        @filter="filter"
+        lazy>
+        <template #empty> No data. </template>
+        <template #loading> Loading data. Please wait. </template>
+        <Column field="id" header="ID">
         </Column>
-        <Column field="name" header="Name" sortable>
+        <Column field="name" header="Name" sortable :show-filter-operator="false" :show-filter-match-modes="false"
+          :show-add-button="false">
 
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
               placeholder="Search by name" />
           </template>
         </Column>
-        <Column field="brand" header="Brand" sortable>
+        <Column field="brand" header="Brand" sortable :show-filter-operator="false" :show-filter-match-modes="false"
+          :show-add-button="false">
 
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
               placeholder="Search by brand" />
           </template>
         </Column>
-        <Column field="type" header="Type" sortable>
+        <Column field="type" header="Type" sortable :show-filter-operator="false" :show-filter-match-modes="false"
+          :show-add-button="false">
 
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
               placeholder="Search by type" />
           </template>
         </Column>
-        <Column field="serial_number" header="Serial Number" sortable>
+        <Column field="serial_number" header="Serial Number" sortable :show-filter-operator="false"
+          :show-filter-match-modes="false" :show-add-button="false">
 
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
               placeholder="Search by serial number" />
           </template>
         </Column>
-        <Column field="procurement_date" header="Procurement Date" sortable>
+        <Column field="procurement_date" header="Procurement Date" sortable data-type="date"
+          :show-filter-operator="false">
           <!-- TODO: Fix -->
 
           <template #filter="{ filterModel }">
             <Calendar v-model="filterModel.value" dateFormat="yy-mm-dd" placeholder="yyyy-mm-dd" mask="9999/99/99" />
           </template>
         </Column>
-        <Column field="version_number" header="Version Number" sortable>
+        <Column field="version_number" header="Version Number" sortable :show-filter-operator="false"
+          :show-filter-match-modes="false" :show-add-button="false">
 
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
               placeholder="Search by version number" />
           </template>
         </Column>
-        <Column field="quantity" header="Quantity" sortable>
+        <Column field="quantity" header="Quantity" sortable :show-filter-operator="false"
+          :show-filter-match-modes="false" :show-add-button="false">
 
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
               placeholder="Search by quantity" />
           </template>
         </Column>
-        <Column field="status" header="Status" sortable>
+        <Column field="status" header="Status" sortable :show-filter-operator="false" :show-filter-match-modes="false"
+          :show-add-button="false">
           <!-- TODO: Fix -->
 
           <template #filter="{ filterModel }">
@@ -96,31 +108,70 @@ import Calendar from 'primevue/calendar';
 import Dropdown from 'primevue/dropdown';
 import Tag from 'primevue/tag';
 import InputText from 'primevue/inputtext';
+import { debounce } from 'lodash';
 
 const entities = ref([]);
 
 const loading = ref(false);
 
-const filters = ref({
-  id: { value: null, matchMode: FilterMatchMode.EQUALS },
-  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  brand: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  type: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  serial_number: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  procurement_date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
-  version_number: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  quantity: { value: null, matchMode: FilterMatchMode.EQUALS },
-  status: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+const search = ref({
+  totalRecords: 0,
+  filters: {
+    name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
+    brand: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
+    type: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
+    serial_number: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
+    procurement_date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
+    version_number: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
+    quantity: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+    status: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+  },
+  rows: 5,
+  sortField: null,
+  sortOrder: -1,
+  page: 0
 });
+
+const sort = (event) => {
+  search.value.sortField = event.sortField;
+  search.value.sortOrder = event.sortOrder;
+
+  getData();
+};
+
+const filter = (event) => {
+  console.log(event);
+  search.value.page = 0;
+
+  getData();
+};
+
+const page = (event) => {
+  search.value.page = event.page;
+
+  getData();
+};
 
 const statuses = ref(['Available', 'Assigned', 'Unavailable', 'Condemned', 'For Repair']);
 
-const getData = async () => {
+const getData = debounce(async () => {
   loading.value = true;
-  const response = await axios.get('/hardware/');
+  const response = await axios.get('/hardware/', {
+    params: {
+      search:
+        JSON.stringify({
+          page: search.value.page,
+          rows: search.value.rows,
+          sortField: search.value.sortField,
+          sortOrder: search.value.sortOrder,
+          filters: search.value.filters
+        })
+    }
+  });
   entities.value = response.data.data;
+  search.value.totalRecords = response.data.totalRecords;
   loading.value = false;
-};
+}, 500);
 
 onMounted(() => {
   getData();
