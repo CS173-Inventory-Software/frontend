@@ -181,3 +181,8 @@ onMounted(() => {
 });
 
 </script>
+<style>
+.p-paginator {
+  border-radius: 0;
+}
+</style>
