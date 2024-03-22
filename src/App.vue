@@ -32,12 +32,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss">
-/* Sizing */
-html,
-body {
-  height: 100%;
-}
-
 #app {
   min-height: 100%;
   display: flex;

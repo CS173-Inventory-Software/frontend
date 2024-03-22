@@ -10,7 +10,6 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   const store = useUserStore();
-  console.log(to, from);
 
   // Check if the user is authenticated
   if (to.name !== '/login' && !store.isAuthenticated()) {

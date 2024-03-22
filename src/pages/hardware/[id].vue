@@ -76,8 +76,9 @@
 
               <div class="field col-4 flex flex-column gap-2 mb-4">
                 <label for="status">Status</label>
-                <Dropdown v-model="form.one2m.instances.data[index].status" :options="statusOptions" optionLabel="label"
-                  optionValue="id" show-clear />
+                <Dropdown v-model="form.one2m.instances.data[index].status" :options="statusOptions"
+                  option-label="label"
+                  option-value="id" show-clear />
               </div>
             </div>
           </template>
@@ -93,7 +94,7 @@ import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import FloatLabel from 'primevue/floatlabel';
 import Textarea from 'primevue/textarea';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, getCurrentInstance } from 'vue';
 import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 import { useRouter } from "vue-router";
@@ -110,10 +111,7 @@ const form = ref({
   description: '',
 
   one2m: {
-    instances: {
-      data: [{}],
-      delete: [],
-    },
+    instances: {}
   },
 });
 
@@ -123,8 +121,22 @@ const loading = ref(false);
 
 const getStatus = async () => {
   const { data } = await axios.get('/status/');
-  console.log(data.data);
   statusOptions.value = data.data;
+};
+
+const get = async () => {
+  if (router.currentRoute.value.params.id) {
+    const { data } = await axios.get(`/hardware/${router.currentRoute.value.params.id}`);
+    form.value = data.data;
+  }
+
+  if (!'data' in form.value.one2m.instances) {
+    form.value.one2m.instances.data = [{}];
+  }
+
+  if (!'delete' in form.value.one2m.instances) {
+    form.value.one2m.instances.delete = [];
+  }
 };
 
 // relations
@@ -141,12 +153,23 @@ const markForDeletion = (id, relation) => {
   }
 };
 const isMarkedForDeletion = (id, relation) => {
-  return form.value.one2m[relation].delete.includes(id);
+  return form.value.one2m[relation]?.delete?.includes(id);
 };
 
 const submit = async () => {
   loading.value = true;
-  const response = await axios.post('/hardware/', form.value);
+  const url = router.currentRoute.value.params.id
+    ? `/hardware/${router.currentRoute.value.params.id}/`
+    : '/hardware/';
+  const method = router.currentRoute.value.params.id
+    ? 'put'
+    : 'post';
+
+  const response = await axios.request({
+    method,
+    url,
+    data: form.value,
+  });
 
   if (response.status === 201) {
     router.push(`/hardware/${response.data.data}`);
@@ -157,8 +180,9 @@ const submit = async () => {
   toast.add({ severity: 'success', summary: 'Success', detail: 'Hardware data saved successfully' });
 };
 
-onMounted(() => {
-  getStatus();
+onMounted(async () => {
+  await getStatus();
+  get();
 });
 </script>
 <style lang="scss">
@@ -170,5 +194,9 @@ onMounted(() => {
 
 .p-float-label {
   margin-bottom: 1.5rem;
+}
+
+fieldset {
+  border: 0;
 }
 </style>

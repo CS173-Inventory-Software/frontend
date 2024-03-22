@@ -27,6 +27,9 @@
         <Column field="hardware_name" header="Name" sortable :show-filter-operator="false"
           :show-filter-match-modes="false"
           :show-add-button="false">
+          <template #body="{ data }">
+            <router-link :to="`/hardware/${data.id}`">{{ data.hardware_name }}</router-link>
+          </template>
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
               placeholder="Search by name" />
@@ -130,14 +133,12 @@ const sort = (event) => {
 };
 
 const filter = (event) => {
-  console.log(event);
   search.value.page = 0;
 
   getData();
 };
 
 const page = (event) => {
-  console.log(event);
   search.value.page = event.page;
   search.value.rows = event.rows;
 
