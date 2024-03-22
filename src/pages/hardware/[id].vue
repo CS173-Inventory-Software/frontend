@@ -1,7 +1,7 @@
 <template>
   <AppLayout>
     <h1 class="text-4xl font-bold mb-4 text-left"><template
-        v-if="router.currentRoute.value.params.id">Edit</template><template
+        v-if="router.currentRoute.value.params.id > 0">Edit</template><template
         v-else>New</template> Hardware</h1>
 
     <form @submit.prevent="submit">
