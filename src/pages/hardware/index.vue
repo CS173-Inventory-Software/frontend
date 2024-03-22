@@ -6,7 +6,7 @@
       <DataTable :value="entities"
         paginator
         paginator-position="both"
-        :rows="5"
+        :rows="search.rows"
         :rowsPerPageOptions="[5, 10, 20, 50]"
         removable-sort
         data-key="id"
@@ -24,25 +24,25 @@
         <template #loading> Loading data. Please wait. </template>
         <Column field="id" header="ID">
         </Column>
-        <Column field="name" header="Name" sortable :show-filter-operator="false" :show-filter-match-modes="false"
+        <Column field="hardware_name" header="Name" sortable :show-filter-operator="false"
+          :show-filter-match-modes="false"
           :show-add-button="false">
-
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
               placeholder="Search by name" />
           </template>
         </Column>
-        <Column field="brand" header="Brand" sortable :show-filter-operator="false" :show-filter-match-modes="false"
+        <Column field="hardware_brand" header="Brand" sortable :show-filter-operator="false"
+          :show-filter-match-modes="false"
           :show-add-button="false">
-
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
               placeholder="Search by brand" />
           </template>
         </Column>
-        <Column field="type" header="Type" sortable :show-filter-operator="false" :show-filter-match-modes="false"
+        <Column field="hardware_type" header="Type" sortable :show-filter-operator="false"
+          :show-filter-match-modes="false"
           :show-add-button="false">
-
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
               placeholder="Search by type" />
@@ -64,20 +64,11 @@
             <Calendar v-model="filterModel.value" dateFormat="yy-mm-dd" placeholder="yyyy-mm-dd" mask="9999/99/99" />
           </template>
         </Column>
-        <Column field="version_number" header="Version Number" sortable :show-filter-operator="false"
+        <Column field="hardware_model_number" header="Model Number" sortable :show-filter-operator="false"
           :show-filter-match-modes="false" :show-add-button="false">
-
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
-              placeholder="Search by version number" />
-          </template>
-        </Column>
-        <Column field="quantity" header="Quantity" sortable :show-filter-operator="false"
-          :show-filter-match-modes="false" :show-add-button="false">
-
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
-              placeholder="Search by quantity" />
+              placeholder="Search by model number" />
           </template>
         </Column>
         <Column field="status" header="Status" sortable :show-filter-operator="false" :show-filter-match-modes="false"
@@ -117,16 +108,15 @@ const loading = ref(false);
 const search = ref({
   totalRecords: 0,
   filters: {
-    name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
-    brand: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
-    type: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
+    hardware_name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
+    hardware_brand: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
+    hardware_type: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
     serial_number: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
     procurement_date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
-    version_number: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
-    quantity: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+    hardware_model_number: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
     status: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
   },
-  rows: 5,
+  rows: 10,
   sortField: null,
   sortOrder: -1,
   page: 0
@@ -147,7 +137,9 @@ const filter = (event) => {
 };
 
 const page = (event) => {
+  console.log(event);
   search.value.page = event.page;
+  search.value.rows = event.rows;
 
   getData();
 };
@@ -156,7 +148,7 @@ const statuses = ref(['Available', 'Assigned', 'Unavailable', 'Condemned', 'For 
 
 const getData = debounce(async () => {
   loading.value = true;
-  const response = await axios.get('/hardware/', {
+  const response = await axios.get('/hardware-instance/', {
     params: {
       search:
         JSON.stringify({
