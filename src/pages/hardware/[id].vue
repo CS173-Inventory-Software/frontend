@@ -1,6 +1,8 @@
 <template>
   <AppLayout>
-    <h1 class="text-4xl font-bold mb-4 text-left">New Hardware</h1>
+    <h1 class="text-4xl font-bold mb-4 text-left"><template
+        v-if="router.currentRoute.value.params.id">Edit</template><template
+        v-else>New</template> Hardware</h1>
 
     <form @submit.prevent="submit">
       <fieldset :disabled="loading">
@@ -53,8 +55,8 @@
           <template #content>
             <div v-for="(instance, index) in form.one2m.instances.data" :key="`instance-${index}`"
               class="mb-4 grid" :class="{
-      'to-delete': isMarkedForDeletion(instance.id, 'instances'),
-    }">
+          'to-delete': isMarkedForDeletion(instance.id, 'instances'),
+        }">
               <div class="field col-1 flex flex-column gap-2">
                 <label>&nbsp;</label>
                 <!-- Existing instances -->
