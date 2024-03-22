@@ -22,6 +22,15 @@
         lazy>
         <template #empty> No data. </template>
         <template #loading> Loading data. Please wait. </template>
+        <template #header>
+          <div class="flex justify-content-end">
+            <router-link to="/hardware/0">
+              <Button>
+                Create New Hardware
+              </Button>
+            </router-link>
+          </div>
+        </template>
         <Column field="id" header="ID">
         </Column>
         <Column field="hardware_name" header="Name" sortable :show-filter-operator="false"
@@ -103,6 +112,7 @@ import Dropdown from 'primevue/dropdown';
 import Tag from 'primevue/tag';
 import InputText from 'primevue/inputtext';
 import { debounce } from 'lodash';
+import Button from 'primevue/button';
 
 const entities = ref([]);
 
