@@ -57,8 +57,19 @@
     }">
               <div class="field col-1 flex flex-column gap-2">
                 <label>&nbsp;</label>
-                <Button @click="form.one2m.instances.data.splice(index, 1)">
+                <!-- Existing instances -->
+                <Button v-if="instance.hardware && !isMarkedForDeletion(instance.id, 'instances')"
+                  @click="markForDeletion(instance.id, 'instances')">
                   <i class="pi pi-trash"></i>
+                </Button>
+                <Button v-else-if="instance.hardware && isMarkedForDeletion(instance.id, 'instances')"
+                  @click="markForDeletion(instance.id, 'instances')">
+                  <i class="pi pi-undo"></i>
+                </Button>
+                <!-- New, uncommitted instances -->
+                <Button v-else @click="form.one2m.instances.data.splice(index, 1)">
+                  <i class="pi pi-trash"></i>
+
                 </Button>
               </div>
 
@@ -130,11 +141,11 @@ const get = async () => {
     form.value = data.data;
   }
 
-  if (!'data' in form.value.one2m.instances) {
+  if (!('data' in form.value.one2m.instances)) {
     form.value.one2m.instances.data = [{}];
   }
 
-  if (!'delete' in form.value.one2m.instances) {
+  if (!('delete' in form.value.one2m.instances)) {
     form.value.one2m.instances.delete = [];
   }
 };
@@ -173,6 +184,8 @@ const submit = async () => {
 
   if (response.status === 201) {
     router.push(`/hardware/${response.data.data}`);
+  } else {
+    await get();
   }
 
   loading.value = false;
@@ -198,5 +211,21 @@ onMounted(async () => {
 
 fieldset {
   border: 0;
+}
+
+.to-delete {
+  background: hsl(0 50% 30% / 4);
+
+  label {
+    color: white;
+  }
+
+  .p-inputwrapper-filled,
+  .p-inputwrapper-focus,
+  .p-filled {
+    &+label {
+      color: white;
+    }
+  }
 }
 </style>
