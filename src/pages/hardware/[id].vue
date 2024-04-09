@@ -80,17 +80,24 @@
                 <InputText id="serial_number" v-model="form.one2m.instances.data[index].serial_number" />
               </div>
 
-              <div class="field col-3 flex flex-column gap-2 mb-4">
+              <div class="field col-2 flex flex-column gap-2 mb-4">
                 <label for="procurement_date">Procurement Date</label>
                 <input name="procurement_date" id="procurement_date"
                   v-model="form.one2m.instances.data[index].procurement_date"
                   class="p-inputtext p-component" data-pc-name="inputtext" data-pc-section="root" type="date">
               </div>
 
-              <div class="field col-4 flex flex-column gap-2 mb-4">
+              <div class="field col-3 flex flex-column gap-2 mb-4">
                 <label for="status">Status</label>
                 <Dropdown v-model="form.one2m.instances.data[index].status" :options="statusOptions"
                   option-label="label"
+                  option-value="id" show-clear />
+              </div>
+
+              <div class="field col-3 flex flex-column gap-2 mb-4">
+                <label for="assignee">Assignee</label>
+                <Dropdown v-model="form.one2m.instances.data[index].assignee" :options="userOptions"
+                  option-label="email"
                   option-value="id" show-clear />
               </div>
             </div>
@@ -129,12 +136,18 @@ const form = ref({
 });
 
 const statusOptions = ref([]);
+const userOptions = ref([]);
 
 const loading = ref(false);
 
 const getStatus = async () => {
   const { data } = await axios.get('/status/');
   statusOptions.value = data.data;
+};
+
+const getUsers = async () => {
+  const { data } = await axios.get('/users/?search=%7B%7D');
+  userOptions.value = data.data;
 };
 
 const get = async () => {
@@ -196,14 +209,14 @@ const submit = async () => {
 };
 
 onMounted(async () => {
-  await getStatus();
+  await Promise.all([getStatus(), getUsers()]);
   get();
 });
 </script>
 <style lang="scss">
 .p-card {
   padding-top: 1.5rem;
-  max-width: 900px;
+  max-width: 1000px;
   margin: auto;
 }
 
