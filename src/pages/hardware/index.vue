@@ -83,7 +83,8 @@
               placeholder="Search by model number" />
           </template>
         </Column>
-        <Column field="status" header="Status" sortable :show-filter-operator="false" :show-filter-match-modes="false"
+        <Column field="status_formula" header="Status" sortable :show-filter-operator="false"
+          :show-filter-match-modes="false"
           :show-add-button="false">
           <!-- TODO: Fix -->
 
@@ -127,7 +128,7 @@ const search = ref({
     serial_number: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
     procurement_date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
     hardware_model_number: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
-    status: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+    status_formula: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
   },
   rows: 10,
   sortField: null,
@@ -155,7 +156,7 @@ const page = (event) => {
   getData();
 };
 
-const statuses = ref(['Available', 'Assigned', 'Unavailable', 'Condemned', 'For Repair']);
+const statuses = ref(['Unassigned', 'Assigned', 'Unavailable', 'Condemned', 'For Repair']);
 
 const getData = debounce(async () => {
   loading.value = true;
