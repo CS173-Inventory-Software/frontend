@@ -1,7 +1,7 @@
 <template>
   <AppLayout>
     <h1 class="text-4xl font-bold mb-4 text-left"><template
-        v-if="router.currentRoute.value.params.id > 0">Edit</template><template v-else>New</template> Hardware</h1>
+        v-if="router.currentRoute.value.params.id > 0">Edit</template><template v-else>New</template> Software</h1>
 
     <form @submit.prevent="submit">
       <fieldset :disabled="loading">
@@ -21,13 +21,13 @@
               </div>
 
               <div class="field col-4 flex flex-column gap-2 mb-4">
-                <label for="type">Type</label>
-                <InputText id="type" v-model="form.type" />
+                <label for="model_number">Version Number</label>
+                <InputText id="model_number" v-model="form.version_number" />
               </div>
 
               <div class="field col-4 flex flex-column gap-2 mb-4">
-                <label for="model_number">Model Number</label>
-                <InputText id="model_number" v-model="form.model_number" />
+                <label for="expiration_date">Expiration Date</label>
+                <InputText id="expiration_date" :value="form.expiration_date" readonly />
               </div>
 
               <div class="field col-12 flex flex-column gap-2 mb-4 flex-grow-1">
@@ -59,11 +59,11 @@
               <div class="field col-1 flex flex-column gap-2">
                 <label>&nbsp;</label>
                 <!-- Existing instances -->
-                <Button v-if="instance.hardware && !isMarkedForDeletion(instance.id, 'instances')"
+                <Button v-if="instance.software && !isMarkedForDeletion(instance.id, 'instances')"
                   @click="markForDeletion(instance.id, 'instances')">
                   <i class="pi pi-trash"></i>
                 </Button>
-                <Button v-else-if="instance.hardware && isMarkedForDeletion(instance.id, 'instances')"
+                <Button v-else-if="instance.software && isMarkedForDeletion(instance.id, 'instances')"
                   @click="markForDeletion(instance.id, 'instances')">
                   <i class="pi pi-undo"></i>
                 </Button>
@@ -75,15 +75,8 @@
               </div>
 
               <div class="field col-3 flex flex-column gap-2 mb-4">
-                <label for="serial_number">Serial Number</label>
-                <InputText id="serial_number" v-model="form.one2m.instances.data[index].serial_number" />
-              </div>
-
-              <div class="field col-2 flex flex-column gap-2 mb-4">
-                <label for="procurement_date">Procurement Date</label>
-                <input name="procurement_date" id="procurement_date"
-                  v-model="form.one2m.instances.data[index].procurement_date"
-                  class="p-inputtext p-component" data-pc-name="inputtext" data-pc-section="root" type="date">
+                <label for="serial_key">Serial Key</label>
+                <InputText id="serial_key" v-model="form.one2m.instances.data[index].serial_key" />
               </div>
 
               <div class="field col-3 flex flex-column gap-2 mb-4">
@@ -125,8 +118,7 @@ const toast = useToast();
 const form = ref({
   name: '',
   brand: '',
-  type: '',
-  model_number: '',
+  version_number: '',
   description: '',
 
   one2m: {
@@ -151,7 +143,7 @@ const getUsers = async () => {
 
 const get = async () => {
   if (router.currentRoute.value.params.id) {
-    const { data } = await axios.get(`/hardware/${router.currentRoute.value.params.id}`);
+    const { data } = await axios.get(`/software/${router.currentRoute.value.params.id}`);
     form.value = data.data;
   }
 
@@ -184,8 +176,8 @@ const isMarkedForDeletion = (id, relation) => {
 const submit = async () => {
   loading.value = true;
   const url = router.currentRoute.value.params.id
-    ? `/hardware/${router.currentRoute.value.params.id}/`
-    : '/hardware/';
+    ? `/software/${router.currentRoute.value.params.id}/`
+    : '/software/';
   const method = router.currentRoute.value.params.id
     ? 'put'
     : 'post';
@@ -197,14 +189,14 @@ const submit = async () => {
   });
 
   if (response.status === 201) {
-    router.push(`/hardware/${response.data.data}`);
+    router.push(`/software/${response.data.data}`);
   } else {
     await get();
   }
 
   loading.value = false;
 
-  toast.add({ severity: 'success', summary: 'Success', detail: 'Hardware data saved successfully' });
+  toast.add({ severity: 'success', summary: 'Success', detail: 'Software data saved successfully' });
 };
 
 onMounted(async () => {
