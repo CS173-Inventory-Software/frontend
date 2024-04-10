@@ -27,7 +27,9 @@
 
               <div class="field col-4 flex flex-column gap-2 mb-4">
                 <label for="expiration_date">Expiration Date</label>
-                <InputText id="expiration_date" :value="form.expiration_date" readonly />
+                <input name="expiration_date" id="expiration_date"
+                  v-model="form.expiration_date"
+                  class="p-inputtext p-component" data-pc-name="inputtext" data-pc-section="root" type="date">
               </div>
 
               <div class="field col-12 flex flex-column gap-2 mb-4 flex-grow-1">
@@ -44,7 +46,7 @@
           </template>
         </Card>
 
-        <Card>
+        <Card class="mb-4">
           <template #title>
             <div class="flex flex-row">
               <div class="mr-4">Instances</div>
@@ -95,6 +97,53 @@
             </div>
           </template>
         </Card>
+
+        <Card>
+          <template #title>
+            <div class="flex flex-row">
+              <div class="mr-4">Subscriptions</div>
+              <Button @click="addToOne2m('subscriptions')"><i class="pi pi-plus"></i></Button>
+            </div>
+          </template>
+          <template #content>
+            <div v-for="(subscription, index) in form.one2m.subscriptions.data" :key="`subscription-${index}`"
+              class="mb-4 grid" :class="{
+                'to-delete': isMarkedForDeletion(subscription.id, 'subscriptions'),
+              }">
+              <div class="field col-1 flex flex-column gap-2">
+                <label>&nbsp;</label>
+                <!-- Existing subscriptions -->
+                <Button v-if="subscription.software && !isMarkedForDeletion(subscription.id, 'subscriptions')"
+                  @click="markForDeletion(subscription.id, 'subscriptions')">
+                  <i class="pi pi-trash"></i>
+                </Button>
+                <Button v-else-if="subscription.software && isMarkedForDeletion(subscription.id, 'subscriptions')"
+                  @click="markForDeletion(subscription.id, 'subscriptions')">
+                  <i class="pi pi-undo"></i>
+                </Button>
+                <!-- New, uncommitted subscriptions -->
+                <Button v-else @click="form.one2m.subscriptions.data.splice(index, 1)">
+                  <i class="pi pi-trash"></i>
+
+                </Button>
+              </div>
+
+              <div class="field col-3 flex flex-column gap-2 mb-4">
+                <label for="start">Start Date</label>
+                <input name="start" id="start"
+                  v-model="form.one2m.subscriptions.data[index].start"
+                  class="p-inputtext p-component" data-pc-name="inputtext" data-pc-section="root" type="date">
+              </div>
+
+              <div class="field col-3 flex flex-column gap-2 mb-4">
+                <label for="end">End Date</label>
+                <input name="end" id="end"
+                  v-model="form.one2m.subscriptions.data[index].end"
+                  class="p-inputtext p-component" data-pc-name="inputtext" data-pc-section="root" type="date">
+              </div>
+            </div>
+          </template>
+        </Card>
       </fieldset>
     </form>
 
@@ -122,7 +171,8 @@ const form = ref({
   description: '',
 
   one2m: {
-    instances: {}
+    instances: {},
+    subscriptions: {},
   },
 });
 
@@ -153,6 +203,14 @@ const get = async () => {
 
   if (!('delete' in form.value.one2m.instances)) {
     form.value.one2m.instances.delete = [];
+  }
+
+  if (!('data' in form.value.one2m.subscriptions)) {
+    form.value.one2m.subscriptions.data = [{}];
+  }
+
+  if (!('delete' in form.value.one2m.subscriptions)) {
+    form.value.one2m.subscriptions.delete = [];
   }
 };
 
