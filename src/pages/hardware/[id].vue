@@ -183,10 +183,10 @@ const isMarkedForDeletion = (id, relation) => {
 
 const submit = async () => {
   loading.value = true;
-  const url = router.currentRoute.value.params.id
+  const url = router.currentRoute.value.params.id > 0
     ? `/hardware/${router.currentRoute.value.params.id}/`
     : '/hardware/';
-  const method = router.currentRoute.value.params.id
+  const method = router.currentRoute.value.params.id > 0
     ? 'put'
     : 'post';
 
