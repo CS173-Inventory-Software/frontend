@@ -13,6 +13,12 @@
         <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down ml-2" />
       </a>
     </template>
+    <template #end>
+      <button @click="logout" class="p-button p-button-text">
+        <i class="pi pi-power-off" />
+        <span class="ml-2">Logout</span>
+      </button>
+    </template>
   </Menubar>
   <main class="container">
     <slot></slot>
@@ -22,6 +28,19 @@
 <script setup>
 import { ref } from 'vue';
 import Menubar from 'primevue/menubar';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
+
+const router = useRouter();
+const store = useUserStore();
+
+const logout = async () => {
+  document.cookie = "";
+  store.setUser({});
+  await axios.post('/logout/');
+  window.axios.defaults.headers.common['Authorization'] = null;
+  router.push('/login');
+};
 
 const menuItems = ref([
   {
