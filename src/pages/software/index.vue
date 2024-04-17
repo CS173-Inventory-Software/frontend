@@ -37,7 +37,7 @@
           :show-filter-match-modes="false"
           :show-add-button="false">
           <template #body="{ data }">
-            <router-link :to="`/software/${data.id}`">{{ data.software_name }}</router-link>
+            <router-link :to="`/software/${data.software}`">{{ data.software_name }}</router-link>
           </template>
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"

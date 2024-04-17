@@ -141,6 +141,11 @@
                   v-model="form.one2m.subscriptions.data[index].end"
                   class="p-inputtext p-component" data-pc-name="inputtext" data-pc-section="root" type="date">
               </div>
+
+              <div class="field col-3 flex flex-column gap-2 mb-4">
+                <label for="number_of_licenses"># Of Licenses</label>
+                <InputText id="number_of_licenses" v-model="form.one2m.subscriptions.data[index].number_of_licenses" />
+              </div>
             </div>
           </template>
         </Card>
@@ -153,6 +158,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
+import InputNumber from 'primevue/inputnumber';
 import FloatLabel from 'primevue/floatlabel';
 import Textarea from 'primevue/textarea';
 import { ref, onMounted, getCurrentInstance } from 'vue';
