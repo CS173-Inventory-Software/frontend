@@ -5,7 +5,7 @@
 
       <template #content>
         <div class="flex flex-column gap-2">
-          <InputText v-model="form.email" placeholder="Email" />
+          <InputText v-model="form.email" placeholder="Email" id="email-input" />
           <div class="flex flex-row">
             <InputText v-model="form.code" placeholder="Code" class="flex-grow-1" id="code-input" />
             <Button :label="requestCodeText" :disabled="!form.email || timer > 0 || sendingCode" id="code-send-button"
@@ -19,7 +19,8 @@
       <template #footer>
         <div class="flex gap-3 mt-1">
 
-          <Button :label="loginText" class="w-full" type="submit" :disabled="!(form.email && form.code) || loggingIn" />
+          <Button :label="loginText" class="w-full" type="submit" :disabled="!(form.email && form.code) || loggingIn"
+            id="submit" />
         </div>
       </template>
     </Card>
