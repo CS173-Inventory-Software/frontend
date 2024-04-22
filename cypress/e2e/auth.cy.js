@@ -1,4 +1,8 @@
 describe('login', () => {
+  beforeEach(() => {
+    Cypress.session.clearAllSavedSessions();
+  });
+
   it('gets the login page', () => {
     cy.visit(Cypress.env('base_url'));
   });

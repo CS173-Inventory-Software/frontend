@@ -24,7 +24,7 @@
         <template #loading> Loading data. Please wait. </template>
         <template #header>
           <div class="flex justify-content-end">
-            <router-link to="/hardware/0">
+            <router-link to="/hardware/0" v-if="store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin()">
               <Button>
                 Create New Hardware
               </Button>
@@ -114,6 +114,9 @@ import Tag from 'primevue/tag';
 import InputText from 'primevue/inputtext';
 import { debounce } from 'lodash';
 import Button from 'primevue/button';
+import { useUserStore } from '@/stores/user';
+
+const store = useUserStore();
 
 const entities = ref([]);
 

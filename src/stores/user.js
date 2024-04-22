@@ -19,6 +19,26 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  function isViewer() {
+    return user.value?.role === 5;
+  }
+
+  function isClerk() {
+    return user.value?.role === 4;
+  }
+
+  function isAdmin() {
+    return user.value?.role === 3;
+  }
+
+  function isSuperAdmin() {
+    return user.value?.role === 2;
+  }
+
+  function isRootAdmin() {
+    return user.value?.role === 1;
+  }
+
   function isAuthenticated() {
     // Check if user is an empty object
     return Object.keys(user.value).length > 0;
@@ -28,6 +48,11 @@ export const useUserStore = defineStore('user', () => {
     user,
     getUser,
     setUser,
-    isAuthenticated
+    isAuthenticated,
+    isViewer,
+    isClerk,
+    isAdmin,
+    isSuperAdmin,
+    isRootAdmin,
   };
 });

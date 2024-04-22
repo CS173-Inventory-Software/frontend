@@ -12,34 +12,47 @@
 
               <div class="field col-12 flex flex-column gap-2 mb-4">
                 <label for="name">Name</label>
-                <InputText id="name" v-model="form.name" />
+                <InputText :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())" id="name"
+                  v-model="form.name" />
               </div>
 
               <div class="field col-4 flex flex-column gap-2 mb-4">
                 <label for="brand">Brand</label>
-                <InputText id="brand" v-model="form.brand" />
+                <InputText :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())" id="brand"
+                  v-model="form.brand" />
               </div>
 
               <div class="field col-4 flex flex-column gap-2 mb-4">
                 <label for="type">Type</label>
-                <InputText id="type" v-model="form.type" />
+                <InputText :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())" id="type"
+                  v-model="form.type" />
               </div>
 
               <div class="field col-4 flex flex-column gap-2 mb-4">
                 <label for="model_number">Model Number</label>
-                <InputText id="model_number" v-model="form.model_number" />
+                <InputText :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())"
+                  id="model_number" v-model="form.model_number" />
               </div>
 
               <div class="field col-12 flex flex-column gap-2 mb-4 flex-grow-1">
                 <label for="description">Description</label>
-                <Textarea v-model="form.description" rows="5" id="description" />
+                <Textarea :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())"
+                  v-model="form.description" rows="5" id="description" />
+              </div>
+
+              <div class="field col-12 flex flex-column gap-2 mb-4">
+                <label for="for_deletion">For Deletion</label>
+                <InputSwitch id="for_deletion"
+                  :readonly="!(store.isClerk() || store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())"
+                  v-model="form.for_deletion" />
               </div>
 
             </div>
           </template>
           <template #footer>
             <div class="flex justify-content-end">
-              <Button type="submit" class="text-center">Submit</Button>
+              <Button v-if="store.isClerk() || store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin()"
+                type="submit" class="text-center">Submit</Button>
             </div>
           </template>
         </Card>
@@ -48,7 +61,8 @@
           <template #title>
             <div class="flex flex-row">
               <div class="mr-4">Instances</div>
-              <Button @click="addToOne2m('instances')"><i class="pi pi-plus"></i></Button>
+              <Button v-if="store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin()"
+                @click="addToOne2m('instances')" class="instance-add-button"><i class="pi pi-plus"></i></Button>
             </div>
           </template>
           <template #content>
@@ -58,46 +72,51 @@
               }">
               <div class="field col-1 flex flex-column gap-2">
                 <label>&nbsp;</label>
-                <!-- Existing instances -->
-                <Button v-if="instance.hardware && !isMarkedForDeletion(instance.id, 'instances')"
-                  @click="markForDeletion(instance.id, 'instances')">
-                  <i class="pi pi-trash"></i>
-                </Button>
-                <Button v-else-if="instance.hardware && isMarkedForDeletion(instance.id, 'instances')"
-                  @click="markForDeletion(instance.id, 'instances')">
-                  <i class="pi pi-undo"></i>
-                </Button>
-                <!-- New, uncommitted instances -->
-                <Button v-else @click="form.one2m.instances.data.splice(index, 1)">
-                  <i class="pi pi-trash"></i>
-
-                </Button>
+                <template v-if="store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin()">
+                  <!-- Existing instances -->
+                  <Button v-if="instance.hardware && !isMarkedForDeletion(instance.id, 'instances')"
+                    @click="markForDeletion(instance.id, 'instances')" class="instance-delete-button">
+                    <i class="pi pi-trash"></i>
+                  </Button>
+                  <Button v-else-if="instance.hardware && isMarkedForDeletion(instance.id, 'instances')"
+                    @click="markForDeletion(instance.id, 'instances')" class="instance-delete-button">
+                    <i class="pi pi-undo"></i>
+                  </Button>
+                  <!-- New, uncommitted instances -->
+                  <Button v-else @click="form.one2m.instances.data.splice(index, 1)" class="instance-delete-button">
+                    <i class="pi pi-trash"></i>
+                  </Button>
+                </template>
               </div>
 
               <div class="field col-3 flex flex-column gap-2 mb-4">
                 <label for="serial_number">Serial Number</label>
-                <InputText id="serial_number" v-model="form.one2m.instances.data[index].serial_number" />
+                <InputText :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())"
+                  :id="`serial_number-${index}`" v-model="form.one2m.instances.data[index].serial_number" />
               </div>
 
               <div class="field col-2 flex flex-column gap-2 mb-4">
                 <label for="procurement_date">Procurement Date</label>
-                <input name="procurement_date" id="procurement_date"
-                  v-model="form.one2m.instances.data[index].procurement_date"
+                <input :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())"
+                  name="procurement_date"
+                  :id="`procurement_date-${index}`" v-model="form.one2m.instances.data[index].procurement_date"
                   class="p-inputtext p-component" data-pc-name="inputtext" data-pc-section="root" type="date">
               </div>
 
-              <div class="field col-3 flex flex-column gap-2 mb-4">
+              <div class="field col-2 flex flex-column gap-2 mb-4">
                 <label for="status">Status</label>
-                <Dropdown v-model="form.one2m.instances.data[index].status" :options="statusOptions"
-                  option-label="label"
-                  option-value="id" show-clear />
+                <Dropdown v-if="store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin()"
+                  v-model="form.one2m.instances.data[index].status" :options="statusOptions" option-label="label"
+                  option-value="id" show-clear :id="`status-${index}`" />
+                <InputText v-else readonly :value="form.one2m.instances.data[index].status_formula"
+                  :id="`status-${index}`" />
               </div>
 
               <div class="field col-3 flex flex-column gap-2 mb-4">
                 <label for="assignee">Assignee</label>
                 <Dropdown v-model="form.one2m.instances.data[index].assignee" :options="userOptions"
                   option-label="email"
-                  option-value="id" show-clear />
+                  option-value="id" show-clear :id="`assignee-${index}`" />
               </div>
             </div>
           </template>
@@ -111,6 +130,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
+import InputSwitch from 'primevue/inputswitch';
 import FloatLabel from 'primevue/floatlabel';
 import Textarea from 'primevue/textarea';
 import { ref, onMounted, getCurrentInstance } from 'vue';
@@ -118,9 +138,11 @@ import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 import { useRouter } from "vue-router";
 import { useToast } from 'primevue/usetoast';
+import { useUserStore } from '../../stores/user';
 
 const router = useRouter();
 const toast = useToast();
+const store = useUserStore();
 
 const form = ref({
   name: '',
@@ -215,7 +237,7 @@ onMounted(async () => {
 <style lang="scss">
 .p-card {
   padding-top: 1.5rem;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: auto;
 }
 

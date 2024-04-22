@@ -9,7 +9,7 @@
           <div class="flex flex-row">
             <InputText v-model="form.code" placeholder="Code" class="flex-grow-1" id="code-input" />
             <Button :label="requestCodeText" :disabled="!form.email || timer > 0 || sendingCode" id="code-send-button"
-              @click="requestCode" />
+              @click="requestCode" type="button" />
 
           </div>
         </div>
