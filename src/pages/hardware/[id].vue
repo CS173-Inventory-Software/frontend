@@ -204,6 +204,10 @@ const isMarkedForDeletion = (id, relation) => {
 };
 
 const submit = async () => {
+  if (!(store.isClerk() || store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())) {
+    return;
+  }
+
   loading.value = true;
   const url = router.currentRoute.value.params.id > 0
     ? `/hardware/${router.currentRoute.value.params.id}/`

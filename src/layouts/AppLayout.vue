@@ -58,10 +58,13 @@ const menuItems = ref([
     icon: 'pi pi-cloud',
     route: '/software'
   },
-  {
+]);
+
+if (store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin()) {
+  menuItems.value.push({
     label: 'Users',
     icon: 'pi pi-user',
     route: '/users',
-  },
-]);
+  });
+}
 </script>
