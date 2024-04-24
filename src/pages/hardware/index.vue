@@ -104,6 +104,13 @@
             </Dropdown>
           </template>
         </Column>
+        <Column field="assignee_formula" header="Assignee" sortable :show-filter-operator="false"
+          :show-filter-match-modes="false" :show-add-button="false">
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
+              placeholder="Search by assignee" />
+          </template>
+        </Column>
       </DataTable>
     </div>
   </AppLayout>
@@ -140,6 +147,7 @@ const search = ref({
     procurement_date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
     hardware_model_number: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
     status_formula: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+    assignee_formula: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
   },
   rows: 10,
   sortField: null,

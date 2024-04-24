@@ -88,6 +88,13 @@
             </Dropdown>
           </template>
         </Column>
+        <Column field="assignee_formula" header="Assignee" sortable :show-filter-operator="false"
+          :show-filter-match-modes="false" :show-add-button="false">
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" class="p-column-filter"
+              placeholder="Search by assignee" />
+          </template>
+        </Column>
       </DataTable>
     </div>
   </AppLayout>
@@ -123,6 +130,7 @@ const search = ref({
     software_version_number: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
     software_expiration_date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
     status_formula: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+    assignee_formula: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
   },
   rows: 10,
   sortField: null,
