@@ -23,7 +23,10 @@
         <template #empty> No data. </template>
         <template #loading> Loading data. Please wait. </template>
         <template #header>
-          <div class="flex justify-content-end">
+          <div class="flex justify-content-end gap-2">
+            <SplitButton @click="downloadCSV" :model="downloadButtonsCSV">
+              Download CSV
+            </SplitButton>
             <router-link to="/hardware/0" v-if="store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin()">
               <Button>
                 Create New Hardware
@@ -114,6 +117,7 @@ import Tag from 'primevue/tag';
 import InputText from 'primevue/inputtext';
 import { debounce } from 'lodash';
 import Button from 'primevue/button';
+import SplitButton from 'primevue/splitbutton';
 import { useUserStore } from '@/stores/user';
 
 const store = useUserStore();
@@ -179,6 +183,50 @@ const getData = debounce(async () => {
   search.value.totalRecords = response.data.totalRecords;
   loading.value = false;
 }, 500);
+
+const downloading = ref(false);
+
+const downloadCSV = async (all = false) => {
+  downloading.value = true;
+  const page = all ? 0 : search.value.page;
+  const rows = all ? 1000000 : search.value.rows;
+  const response = await axios.request('/hardware-csv/', {
+    params: {
+      search:
+        JSON.stringify({
+          page: page,
+          rows: rows,
+          sortField: search.value.sortField,
+          sortOrder: search.value.sortOrder,
+          filters: search.value.filters
+        })
+    },
+    method: 'GET',
+    responseType: 'blob'
+  });
+  const href = URL.createObjectURL(response.data);
+  const link = document.createElement('a');
+  link.href = href;
+  link.setAttribute('download', 'hardware.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(href);
+  downloading.value = false;
+};
+
+
+const downloadButtonsCSV = [
+  {
+    label: 'Page',
+    command: downloadCSV.bind(null, false),
+  },
+  {
+    label: 'All',
+    command: downloadCSV.bind(null, true),
+  }
+];
+
 
 onMounted(() => {
   getData();
