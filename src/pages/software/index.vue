@@ -65,6 +65,15 @@
               placeholder="Search by version number" />
           </template>
         </Column>
+        <Column field="software_expiration_date" header="Expiration Date" sortable data-type="date"
+          :show-filter-operator="false">
+          <!-- TODO: Fix -->
+
+          <template #filter="{ filterModel }">
+            <input v-model="filterModel.value" class="p-inputtext p-component" data-pc-name="inputtext"
+              data-pc-section="root" type="date">
+          </template>
+        </Column>
         <Column field="status_formula" header="Status" sortable :show-filter-operator="false"
           :show-filter-match-modes="false"
           :show-add-button="false">
@@ -112,6 +121,7 @@ const search = ref({
     software_brand: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
     software_type: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
     software_version_number: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
+    software_expiration_date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
     status_formula: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
   },
   rows: 10,

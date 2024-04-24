@@ -79,7 +79,8 @@
           <!-- TODO: Fix -->
 
           <template #filter="{ filterModel }">
-            <Calendar v-model="filterModel.value" dateFormat="yy-mm-dd" placeholder="yyyy-mm-dd" mask="9999/99/99" />
+            <input v-model="filterModel.value" class="p-inputtext p-component" data-pc-name="inputtext"
+              data-pc-section="root" type="date">
           </template>
         </Column>
         <Column field="hardware_model_number" header="Model Number" sortable :show-filter-operator="false"

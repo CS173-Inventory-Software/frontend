@@ -191,6 +191,9 @@ import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 import { useRouter } from "vue-router";
 import { useToast } from 'primevue/usetoast';
+import { useUserStore } from '@/stores/user';
+
+const store = useUserStore();
 
 const router = useRouter();
 const toast = useToast();
