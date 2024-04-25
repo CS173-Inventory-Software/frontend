@@ -125,8 +125,10 @@
                 <label for="serial_number">Serial Number</label>
                 <InputText :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())"
                   :id="`serial_number-${index}`" v-model="form.one2m.instances.data[index].serial_number"
-                  :invalid="errors.instances[index]?.serial_number" />
-                <Message v-if="errors.instances[index]?.serial_number" severity="error" :closable="false">
+                  :invalid="index < errors?.instances?.length && errors?.instances[index]?.serial_number" />
+                <Message v-if="index < errors?.instances?.length && errors?.instances[index]?.serial_number"
+                  severity="error"
+                  :closable="false">
                   <template #messageicon>
                     &nbsp;
                   </template>
@@ -141,8 +143,10 @@
                   name="procurement_date"
                   :id="`procurement_date-${index}`" v-model="form.one2m.instances.data[index].procurement_date"
                   class="p-inputtext p-component" data-pc-name="inputtext" data-pc-section="root" type="date"
-                  :class="{ 'p-invalid': errors.instances[index]?.procurement_date }">
-                <Message v-if="errors.instances[index]?.procurement_date" severity="error" :closable="false">
+                  :class="{ 'p-invalid': index < errors?.instances?.length && errors?.instances[index]?.procurement_date }">
+                <Message v-if="index < errors?.instances?.length && errors?.instances[index]?.procurement_date"
+                  severity="error"
+                  :closable="false">
                   <template #messageicon>
                     &nbsp;
                   </template>
@@ -261,6 +265,8 @@ const submit = async () => {
   if (!(store.isClerk() || store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())) {
     return;
   }
+
+  errors.value = {};
 
   loading.value = true;
   const url = router.currentRoute.value.params.id > 0
