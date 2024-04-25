@@ -13,31 +13,63 @@
               <div class="field col-12 flex flex-column gap-2 mb-4">
                 <label for="name">Name</label>
                 <InputText :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())" id="name"
-                  v-model="form.name" />
+                  v-model="form.name" :invalid="errors.name" />
+                <Message v-if="errors.name" severity="error" :closable="false">
+                  <template #messageicon>
+                    &nbsp;
+                  </template>
+                  {{ errors.name.join('. ') }}
+                </Message>
               </div>
 
               <div class="field col-4 flex flex-column gap-2 mb-4">
                 <label for="brand">Brand</label>
                 <InputText :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())" id="brand"
-                  v-model="form.brand" />
+                  v-model="form.brand" :invalid="errors.brand" />
+                <Message v-if="errors.brand" severity="error" :closable="false">
+                  <template #messageicon>
+                    &nbsp;
+                  </template>
+                  {{ errors.brand.join('. ') }}
+                </Message>
               </div>
 
               <div class="field col-4 flex flex-column gap-2 mb-4">
                 <label for="type">Type</label>
                 <InputText :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())" id="type"
-                  v-model="form.type" />
+                  v-model="form.type" :invalid="errors.type" />
+                <Message v-if="errors.type" severity="error" :closable="false">
+                  <template #messageicon>
+                    &nbsp;
+                  </template>
+                  {{ errors.type.join('. ') }}
+                </Message>
               </div>
 
               <div class="field col-4 flex flex-column gap-2 mb-4">
                 <label for="model_number">Model Number</label>
                 <InputText :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())"
-                  id="model_number" v-model="form.model_number" />
+                  id="model_number"
+                  v-model="form.model_number" :invalid="errors.model_number" />
+                <Message v-if="errors.model_number" severity="error" :closable="false">
+                  <template #messageicon>
+                    &nbsp;
+                  </template>
+                  {{ errors.model_number.join('. ') }}
+                </Message>
+
               </div>
 
               <div class="field col-12 flex flex-column gap-2 mb-4 flex-grow-1">
                 <label for="description">Description</label>
                 <Textarea :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())"
-                  v-model="form.description" rows="5" id="description" />
+                  v-model="form.description" rows="5" id="description" :invalid="errors.description" />
+                <Message v-if="errors.description" severity="error" :closable="false">
+                  <template #messageicon>
+                    &nbsp;
+                  </template>
+                  {{ errors.description.join('. ') }}
+                </Message>
               </div>
 
               <div class="field col-12 flex flex-column gap-2 mb-4">
@@ -92,7 +124,15 @@
               <div class="field col-3 flex flex-column gap-2 mb-4">
                 <label for="serial_number">Serial Number</label>
                 <InputText :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())"
-                  :id="`serial_number-${index}`" v-model="form.one2m.instances.data[index].serial_number" />
+                  :id="`serial_number-${index}`" v-model="form.one2m.instances.data[index].serial_number"
+                  :invalid="errors.instances[index]?.serial_number" />
+                <Message v-if="errors.instances[index]?.serial_number" severity="error" :closable="false">
+                  <template #messageicon>
+                    &nbsp;
+                  </template>
+                  {{ errors.instances[index].serial_number.join('. ') }}
+                </Message>
+
               </div>
 
               <div class="field col-2 flex flex-column gap-2 mb-4">
@@ -100,7 +140,14 @@
                 <input :readonly="!(store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin())"
                   name="procurement_date"
                   :id="`procurement_date-${index}`" v-model="form.one2m.instances.data[index].procurement_date"
-                  class="p-inputtext p-component" data-pc-name="inputtext" data-pc-section="root" type="date">
+                  class="p-inputtext p-component" data-pc-name="inputtext" data-pc-section="root" type="date"
+                  :class="{ 'p-invalid': errors.instances[index]?.procurement_date }">
+                <Message v-if="errors.instances[index]?.procurement_date" severity="error" :closable="false">
+                  <template #messageicon>
+                    &nbsp;
+                  </template>
+                  {{ errors.instances[index].procurement_date.join('. ') }}
+                </Message>
               </div>
 
               <div class="field col-2 flex flex-column gap-2 mb-4">
@@ -139,6 +186,7 @@ import Button from 'primevue/button';
 import { useRouter } from "vue-router";
 import { useToast } from 'primevue/usetoast';
 import { useUserStore } from '../../stores/user';
+import Message from 'primevue/message';
 
 const router = useRouter();
 const toast = useToast();
@@ -161,6 +209,8 @@ const userOptions = ref([]);
 
 const loading = ref(false);
 
+const errors = ref({});
+
 const getStatus = async () => {
   const { data } = await axios.get('/status/');
   statusOptions.value = data.data;
@@ -172,7 +222,9 @@ const getUsers = async () => {
 };
 
 const get = async () => {
-  if (router.currentRoute.value.params.id) {
+  loading.value = true;
+
+  if (router.currentRoute.value.params.id > 0) {
     const { data } = await axios.get(`/hardware/${router.currentRoute.value.params.id}`);
     form.value = data.data;
   }
@@ -184,6 +236,8 @@ const get = async () => {
   if (!('delete' in form.value.one2m.instances)) {
     form.value.one2m.instances.delete = [];
   }
+
+  loading.value = false;
 };
 
 // relations
@@ -216,21 +270,26 @@ const submit = async () => {
     ? 'put'
     : 'post';
 
-  const response = await axios.request({
-    method,
-    url,
-    data: form.value,
-  });
-
-  if (response.status === 201) {
-    router.push(`/hardware/${response.data.data}`);
-  } else {
-    await get();
+  try {
+    const response = await axios.request({
+      method,
+      url,
+      data: form.value,
+    });
+    if (response.status === 201) {
+      router.push(`/hardware/${response.data.data}`);
+    } else {
+      await get();
+    }
+    toast.add({ severity: 'success', summary: 'Success', detail: 'Hardware data saved successfully' });
+  } catch (error) {
+    if (error.response.status === 422) {
+      errors.value = error.response.data.errors;
+      toast.add({ severity: 'error', summary: 'Form Errors', detail: 'Invalid data' });
+    }
   }
-
   loading.value = false;
 
-  toast.add({ severity: 'success', summary: 'Success', detail: 'Hardware data saved successfully' });
 };
 
 onMounted(async () => {

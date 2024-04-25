@@ -192,6 +192,7 @@ import Button from 'primevue/button';
 import { useRouter } from "vue-router";
 import { useToast } from 'primevue/usetoast';
 import { useUserStore } from '@/stores/user';
+import InputSwitch from 'primevue/inputswitch';
 
 const store = useUserStore();
 
@@ -226,7 +227,9 @@ const getUsers = async () => {
 };
 
 const get = async () => {
-  if (router.currentRoute.value.params.id) {
+  loading.value = true;
+
+  if (router.currentRoute.value.params.id > 0) {
     const { data } = await axios.get(`/software/${router.currentRoute.value.params.id}`);
     form.value = data.data;
   }
@@ -246,6 +249,8 @@ const get = async () => {
   if (!('delete' in form.value.one2m.subscriptions)) {
     form.value.one2m.subscriptions.delete = [];
   }
+
+  loading.value = false;
 };
 
 // relations
