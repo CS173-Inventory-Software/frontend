@@ -26,11 +26,6 @@
         <SplitButton @click="downloadCSV(false)" :model="downloadButtonsCSV">
           Download CSV
         </SplitButton>
-        <router-link to="/hardware/0" v-if="store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin()">
-          <Button>
-            Create New Hardware
-          </Button>
-        </router-link>
       </div>
     </template>
     <Column field="id" header="ID">
