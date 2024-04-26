@@ -1,7 +1,7 @@
 <template>
   <AppLayout>
     <div class="flex flex-column items-center">
-      <h1 class="text-4xl font-bold mb-4 text-left">Reports</h1>
+      <h1 class="text-4xl font-bold mb-4 text-left">Assigned Equipment</h1>
       <TabView>
         <TabPanel header="Software Assigned">
           <SoftwareTable source="/user/software/" download-name="user-software" />
