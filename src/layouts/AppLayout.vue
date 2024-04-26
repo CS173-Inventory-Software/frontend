@@ -58,6 +58,11 @@ const menuItems = ref([
     icon: 'pi pi-cloud',
     route: '/software'
   },
+  {
+    label: 'Assigned',
+    icon: 'pi pi-clipboard',
+    route: '/equipment'
+  },
 ]);
 
 if (store.isAdmin() || store.isSuperAdmin() || store.isRootAdmin()) {
