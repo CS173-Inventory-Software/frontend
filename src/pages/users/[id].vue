@@ -81,21 +81,30 @@ const submit = async () => {
     ? 'put'
     : 'post';
 
-  const response = await axios.request({
-    method,
-    url,
-    data: form.value,
-  });
+  try {
+    const response = await axios.request({
+      method,
+      url,
+      data: form.value,
+    });
 
-  if (response.status === 201) {
-    router.push(`/users/${response.data.data}`);
-  } else {
-    await get();
+    if (response.status === 201) {
+      router.push(`/users/${response.data.data}`);
+    } else {
+      await get();
+    }
+
+    toast.add({ severity: 'success', summary: 'Success', detail: 'User data saved successfully' });
+  } catch (error) {
+    if (error.response.status === 422) {
+      errors.value = error.response.data.errors;
+      toast.add({ severity: 'error', summary: 'Form Errors', detail: 'Invalid data' });
+    } else if (error.response.status === 401) {
+      toast.add({ severity: 'error', summary: 'Unauthorised', detail: 'You are not authorised to edit this data' });
+    }
   }
 
   loading.value = false;
-
-  toast.add({ severity: 'success', summary: 'Success', detail: 'User data saved successfully' });
 };
 
 onMounted(async () => {
