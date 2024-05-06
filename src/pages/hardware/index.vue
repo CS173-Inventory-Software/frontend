@@ -243,11 +243,32 @@ const downloadJSON = async (all = false) => {
         })
     },
     method: 'GET',
-    responseType: 'blob'
   });
-  const href = URL.createObjectURL(response.data);
+
+  let json = "data:text/json;charset=utf-8,";
+
+  const meta = [
+    { header: 'ID', field: 'id' },
+    { header: 'Name', field: 'hardware_name' },
+    { header: 'Brand', field: 'hardware_brand' },
+    { header: 'Type', field: 'hardware_type' },
+    { header: 'Serial Number', field: 'serial_number' },
+    { header: 'Procurement Date', field: 'procurement_date' },
+    { header: 'Model Number', field: 'hardware_model_number' },
+    { header: 'Status', field: 'status_formula' },
+    { header: 'Assignee', field: 'assignee_formula' }
+  ];
+
+  json += encodeURIComponent(JSON.stringify(response.data.data.map(row => {
+    let obj = {};
+    meta.map(m => {
+      obj[m.header] = row[m.field];
+    });
+    return obj;
+  })));
+
   const link = document.createElement('a');
-  link.href = href;
+  link.href = json;
   link.setAttribute('download', 'hardware.json');
   document.body.appendChild(link);
   link.click();
@@ -255,6 +276,7 @@ const downloadJSON = async (all = false) => {
   URL.revokeObjectURL(href);
   downloading.value = false;
 };
+
 
 const downloadButtonsCSV = [
   {

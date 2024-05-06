@@ -204,6 +204,7 @@ const downloadCSV = async (all = false) => {
     "Name",
     "Brand",
     "Version Number",
+    "Expiration Date",
     "Serial Key",
     "Status",
     "Assignee"
@@ -215,6 +216,7 @@ const downloadCSV = async (all = false) => {
       row.software_name,
       row.software_brand,
       row.software_version_number,
+      row.software_expiration_date,
       row.serial_key,
       row.status_formula,
       row.assignee_formula
@@ -258,6 +260,7 @@ const downloadJSON = async (all = false) => {
     { header: "Name", field: "software_name" },
     { header: "Brand", field: "software_brand" },
     { header: "Version Number", field: "software_version_number" },
+    { header: "Expiration Date", field: "software_expiration_date" },
     { header: "Serial Key", field: "software_serial_key" },
     { header: "Status", field: "status_formula" },
     { header: "Assignee", field: "assignee_formula" }

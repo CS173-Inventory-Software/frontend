@@ -114,6 +114,7 @@ import { debounce } from 'lodash';
 import Button from 'primevue/button';
 import { useUserStore } from '@/stores/user';
 import SplitButton from 'primevue/splitbutton';
+import SoftwareTable from '@/components/SoftwareTable.vue';
 
 const store = useUserStore();
 
@@ -227,12 +228,32 @@ const downloadJSON = async (all = false) => {
         })
     },
     method: 'GET',
-    responseType: 'blob'
   });
-  const href = URL.createObjectURL(response.data);
+
+  let json = "data:text/json;charset=utf-8,";
+
+  const meta = [
+    { header: "ID", field: "id" },
+    { header: "Name", field: "software_name" },
+    { header: "Brand", field: "software_brand" },
+    { header: "Version Number", field: "software_version_number" },
+    { header: "Expiration Date", field: "software_expiration_date" },
+    { header: "Serial Key", field: "software_serial_key" },
+    { header: "Status", field: "status_formula" },
+    { header: "Assignee", field: "assignee_formula" }
+  ];
+
+  json += encodeURIComponent(JSON.stringify(response.data.data.map(row => {
+    let obj = {};
+    meta.map(m => {
+      obj[m.header] = row[m.field];
+    });
+    return obj;
+  })));
+
   const link = document.createElement('a');
-  link.href = href;
-  link.setAttribute('download', 'software.json');
+  link.href = json;
+  link.setAttribute('download', `software.json`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
