@@ -12,14 +12,19 @@
 
               <div class="field col-6 flex flex-column gap-2 mb-4">
                 <label for="email">Email</label>
-                <InputText id="email" v-model="form.email" />
+                <InputText id="email" v-model="form.email" :invalid="errors.email" />
+                <Message v-if="errors.email" severity="error" :closable="false">
+                  <template #messageicon>
+                    &nbsp;
+                  </template>
+                  {{ errors.email.join('. ') }}
+                </Message>
               </div>
 
               <div class="field col-6 flex flex-column gap-2 mb-4">
                 <label for="type">Type</label>
-                <Dropdown v-model="form.type" :options="userTypeOptions"
-                  option-label="label"
-                  option-value="id" show-clear />
+                <Dropdown v-model="form.type" :options="userTypeOptions" option-label="label" option-value="id"
+                  show-clear />
               </div>
 
             </div>
@@ -47,6 +52,7 @@ import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 import { useRouter } from "vue-router";
 import { useToast } from 'primevue/usetoast';
+import Message from 'primevue/message';
 
 const router = useRouter();
 const toast = useToast();
@@ -59,6 +65,8 @@ const form = ref({
 const loading = ref(false);
 
 const userTypeOptions = ref([]);
+
+const errors = ref({});
 
 const getUserTypes = async () => {
   const { data } = await axios.get('/user-types/');
@@ -74,6 +82,9 @@ const get = async () => {
 
 const submit = async () => {
   loading.value = true;
+
+  errors.value = {};
+
   const url = router.currentRoute.value.params.id > 0
     ? `/users/${router.currentRoute.value.params.id}/`
     : '/users/';
