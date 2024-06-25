@@ -37,6 +37,8 @@ import { useUserStore } from '@/stores/user';
 import { useToast } from 'primevue/usetoast';
 import { useRouter } from 'vue-router';
 
+const rootLoginShow = import.meta.env.VITE_ROOT_LOGIN_SHOW === 'true';
+
 const router = useRouter();
 
 const store = useUserStore();
@@ -44,8 +46,8 @@ const store = useUserStore();
 const toast = useToast();
 
 const form = ref({
-  email: '',
-  code: '',
+  email: rootLoginShow ? import.meta.env.VITE_ROOT_LOGIN_USER : '',
+  code: rootLoginShow ? import.meta.env.VITE_ROOT_LOGIN_CODE : '',
 });
 
 const timer = ref(0);
